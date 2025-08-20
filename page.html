@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The LLM Landscape: An Interactive Comparison</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: "Modern Slate" - A calm, professional palette with a base of warm grays (Slate), a neutral off-white background (Stone), and a subtle, trustworthy blue for accents and interactive elements. -->
+    <!-- Application Structure Plan: The SPA is designed as a vertical, single-page dashboard for a seamless narrative flow. A sticky top navigation allows users to jump to key sections, facilitating non-linear exploration. The structure is thematic, not linear like the report: 1) A high-level Market Overview visualizes strategic positioning. 2) A tabbed "Platform Deep Dive" allows focused comparison without overwhelming the user. 3) An interactive "Use Case Showdown" provides goal-oriented recommendations. 4) Data-rich tables for features and pricing are included for detailed analysis. This structure was chosen to transform a dense report into an exploratory tool, enabling users to quickly grasp high-level strategy or dive deep into specifics based on their interests. -->
+    <!-- Visualization & Content Choices: 
+        - Market Positioning (Table 1) -> Goal: Compare high-level strategy -> Viz: Radar Chart (Chart.js) -> Interaction: Hover tooltips -> Justification: A radar chart effectively visualizes multi-dimensional strengths, showing at a glance how platforms like Perplexity specialize in one area (Research) while ChatGPT is a generalist.
+        - Platform Deep Dives -> Goal: Organize & Inform -> Presentation: Tabbed Interface (HTML/JS) -> Interaction: Click to switch content -> Justification: Condenses a large volume of text into a manageable, user-controlled view, preventing cognitive overload and facilitating direct comparison.
+        - Use Case Analysis -> Goal: Guide & Recommend -> Presentation: Persona Selector Buttons (HTML/JS) -> Interaction: Click to reveal tailored recommendations -> Justification: Transforms static text into a goal-oriented tool, providing users with immediate, actionable advice for their specific needs.
+        - Feature/Pricing Tables -> Goal: Compare Details -> Presentation: Styled HTML Tables -> Interaction: Hover highlights -> Justification: Standard, effective method for presenting dense, structured data. Hover effects improve readability.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8f7f4; /* Warm Neutral Background */
+            color: #334155;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 50vh;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 500px;
+            }
+        }
+        .nav-link {
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #3b82f6;
+            border-bottom-color: #3b82f6;
+        }
+        .platform-tab, .persona-btn {
+            transition: all 0.3s ease;
+        }
+        .platform-tab.active, .persona-btn.active {
+            background-color: #3b82f6;
+            color: white;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        .table-cell-feature {
+            font-size: 1.5rem;
+            line-height: 1;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0">
+                    <h1 class="text-xl font-bold text-slate-800">LLM Landscape</h1>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#overview" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-600">Overview</a>
+                        <a href="#platforms" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-600">Platforms</a>
+                        <a href="#features" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-600">Features</a>
+                        <a href="#use-cases" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-600">Use Cases</a>
+                        <a href="#pricing" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-600">Pricing</a>
+                        <a href="#outlook" class="nav-link px-3 py-2 rounded-md text-sm font-medium text-slate-600">Outlook</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+
+        <section id="intro" class="text-center mb-16">
+            <h2 class="text-4xl md:text-5xl font-extrabold text-slate-900 mb-4">The Illusion of Sameness</h2>
+            <p class="max-w-3xl mx-auto text-lg text-slate-600">
+                The LLM chat interface has become universal, but beneath this simple facade lies a fierce battleground. True differentiation is no longer about chat; it's about the power of integrated tools, ecosystem moats, and the shift towards proactive AI agents. This interactive report dissects the market leaders to reveal their true strategic identities.
+            </p>
+        </section>
+
+        <section id="overview" class="mb-16 scroll-mt-20">
+            <h3 class="text-3xl font-bold text-center text-slate-800 mb-2">Market Positioning at a Glance</h3>
+            <p class="text-center text-slate-600 mb-8 max-w-2xl mx-auto">
+                Each platform pursues a distinct strategy, from all-purpose versatility to specialized expertise. This chart visualizes the core strategic focus of each competitor across five key dimensions. Hover over points to see how they compare.
+            </p>
+            <div class="bg-white p-4 sm:p-6 rounded-xl shadow-lg">
+                <div class="chart-container">
+                    <canvas id="strategyRadarChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section id="platforms" class="mb-16 scroll-mt-20">
+            <h3 class="text-3xl font-bold text-center text-slate-800 mb-2">Platform Deep Dives</h3>
+            <p class="text-center text-slate-600 mb-8 max-w-2xl mx-auto">
+                Beyond the chatbox, each platform is the result of a unique corporate strategy, technological philosophy, and market vision. Select a platform below to explore its core technology, user experience, and value proposition in detail.
+            </p>
+            <div class="flex flex-wrap justify-center gap-2 md:gap-4 mb-8">
+                <button data-platform="chatgpt" class="platform-tab active text-sm md:text-base font-semibold py-2 px-4 rounded-full bg-white shadow-sm border border-slate-200 text-slate-700 hover:bg-slate-50">ChatGPT</button>
+                <button data-platform="gemini" class="platform-tab text-sm md:text-base font-semibold py-2 px-4 rounded-full bg-white shadow-sm border border-slate-200 text-slate-700 hover:bg-slate-50">Gemini</button>
+                <button data-platform="claude" class="platform-tab text-sm md:text-base font-semibold py-2 px-4 rounded-full bg-white shadow-sm border border-slate-200 text-slate-700 hover:bg-slate-50">Claude</button>
+                <button data-platform="le-chat" class="platform-tab text-sm md:text-base font-semibold py-2 px-4 rounded-full bg-white shadow-sm border border-slate-200 text-slate-700 hover:bg-slate-50">Le Chat</button>
+                <button data-platform="perplexity" class="platform-tab text-sm md:text-base font-semibold py-2 px-4 rounded-full bg-white shadow-sm border border-slate-200 text-slate-700 hover:bg-slate-50">Perplexity</button>
+            </div>
+            <div id="platform-content" class="bg-white p-6 sm:p-8 rounded-xl shadow-lg min-h-[400px]">
+            </div>
+        </section>
+        
+        <section id="features" class="mb-16 scroll-mt-20">
+            <h3 class="text-3xl font-bold text-center text-slate-800 mb-2">Head-to-Head Feature Comparison</h3>
+            <p class="text-center text-slate-600 mb-8 max-w-2xl mx-auto">
+                The real battle is fought in the integrated toolsets. This matrix provides a detailed, at-a-glance comparison of key tools and features across the five platforms, from research capabilities to agentic workflows.
+            </p>
+            <div class="overflow-x-auto bg-white rounded-xl shadow-lg p-2">
+                <table class="min-w-full divide-y divide-slate-200">
+                    <thead class="bg-slate-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-slate-600 uppercase tracking-wider">Feature / Tool</th>
+                            <th scope="col" class="px-6 py-3 text-center text-xs font-bold text-slate-600 uppercase tracking-wider">ChatGPT</th>
+                            <th scope="col" class="px-6 py-3 text-center text-xs font-bold text-slate-600 uppercase tracking-wider">Gemini</th>
+                            <th scope="col" class="px-6 py-3 text-center text-xs font-bold text-slate-600 uppercase tracking-wider">Claude</th>
+                            <th scope="col" class="px-6 py-3 text-center text-xs font-bold text-slate-600 uppercase tracking-wider">Le Chat</th>
+                            <th scope="col" class="px-6 py-3 text-center text-xs font-bold text-slate-600 uppercase tracking-wider">Perplexity</th>
+                        </tr>
+                    </thead>
+                    <tbody id="features-table-body" class="bg-white divide-y divide-slate-200">
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="use-cases" class="mb-16 scroll-mt-20">
+            <h3 class="text-3xl font-bold text-center text-slate-800 mb-2">Use Case Showdown</h3>
+            <p class="text-center text-slate-600 mb-8 max-w-2xl mx-auto">
+                The best AI platform depends entirely on your goals. Select a persona below to see a tailored analysis and our recommendation for the best tool for the job, from content creation to enterprise compliance.
+            </p>
+            <div class="flex flex-wrap justify-center gap-2 md:gap-4 mb-8">
+                <button data-persona="creator" class="persona-btn active text-sm md:text-base font-semibold py-2 px-4 rounded-full bg-white shadow-sm border border-slate-200 text-slate-700 hover:bg-slate-50">🎨 Content Creator</button>
+                <button data-persona="developer" class="persona-btn text-sm md:text-base font-semibold py-2 px-4 rounded-full bg-white shadow-sm border border-slate-200 text-slate-700 hover:bg-slate-50">💻 Developer</button>
+                <button data-persona="researcher" class="persona-btn text-sm md:text-base font-semibold py-2 px-4 rounded-full bg-white shadow-sm border border-slate-200 text-slate-700 hover:bg-slate-50">🔬 Researcher</button>
+                <button data-persona="business" class="persona-btn text-sm md:text-base font-semibold py-2 px-4 rounded-full bg-white shadow-sm border border-slate-200 text-slate-700 hover:bg-slate-50">🏢 Business User</button>
+            </div>
+            <div id="use-case-content" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            </div>
+        </section>
+
+        <section id="pricing" class="mb-16 scroll-mt-20">
+            <h3 class="text-3xl font-bold text-center text-slate-800 mb-2">Monetization & Value Analysis</h3>
+            <p class="text-center text-slate-600 mb-8 max-w-2xl mx-auto">
+                Pricing strategies reveal target markets and strategic priorities. While a ~$20/month "prosumer" tier has become standard, the value offered at each level varies significantly. Compare the plans below.
+            </p>
+            <div class="overflow-x-auto bg-white rounded-xl shadow-lg p-2">
+                <table class="min-w-full divide-y divide-slate-200">
+                    <thead class="bg-slate-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-slate-600 uppercase tracking-wider">Plan Tier</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-slate-600 uppercase tracking-wider">ChatGPT</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-slate-600 uppercase tracking-wider">Gemini</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-slate-600 uppercase tracking-wider">Claude</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-slate-600 uppercase tracking-wider">Le Chat</th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-bold text-slate-600 uppercase tracking-wider">Perplexity</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pricing-table-body" class="bg-white divide-y divide-slate-200 text-sm">
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="outlook" class="scroll-mt-20">
+            <h3 class="text-3xl font-bold text-center text-slate-800 mb-8">Strategic Outlook & Recommendations</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
+                <div class="bg-white p-6 rounded-xl shadow-lg">
+                    <h4 class="font-bold text-lg text-blue-600 mb-2">The Future is Agentic</h4>
+                    <p class="text-slate-600 text-sm">The simple chat interface is becoming a legacy model. The next frontier is proactive AI agents that can understand high-level goals and autonomously execute multi-step tasks across applications to achieve them.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-lg">
+                    <h4 class="font-bold text-lg text-blue-600 mb-2">The War of Ecosystems</h4>
+                    <p class="text-slate-600 text-sm">As raw model intelligence becomes commoditized, deep integration into existing workflows (like Gemini in Workspace) is the dominant strategy for creating a defensible moat and a sticky user experience.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-lg">
+                    <h4 class="font-bold text-lg text-blue-600 mb-2">The Rise of the Meta-Platform</h4>
+                    <p class="text-slate-600 text-sm">Specialized interfaces like Perplexity, which provide access to the best underlying models, threaten to commoditize the LLMs themselves, shifting the value to the user experience and trust layer.</p>
+                </div>
+            </div>
+            <div class="mt-12 bg-blue-50 border-l-4 border-blue-500 p-6 rounded-r-lg">
+                <h4 class="font-bold text-xl text-slate-800 mb-4">Final Recommendations</h4>
+                <ul class="space-y-3 text-slate-700">
+                    <li><strong class="text-slate-900">For Maximum Versatility:</strong> Choose <span class="font-semibold text-blue-600">ChatGPT</span> for its powerful all-around toolset and vast ecosystem.</li>
+                    <li><strong class="text-slate-900">For Business Productivity:</strong> Choose <span class="font-semibold text-blue-600">Gemini</span> for its unparalleled integration with the Google Workspace.</li>
+                    <li><strong class="text-slate-900">For Enterprise Safety:</strong> Choose <span class="font-semibold text-blue-600">Claude</span> for its commitment to safety and industry-leading document analysis.</li>
+                    <li><strong class="text-slate-900">For Developer Control:</strong> Choose <span class="font-semibold text-blue-600">Mistral's Le Chat</span> for its high-performance, customizable open-weight models.</li>
+                    <li><strong class="text-slate-900">For Research Accuracy:</strong> Choose <span class="font-semibold text-blue-600">Perplexity</span> for its verifiable, source-backed answers.</li>
+                </ul>
+            </div>
+        </section>
+
+    </main>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const platformData = {
+        chatgpt: {
+            title: "OpenAI's ChatGPT: The Incumbent All-Rounder",
+            content: `
+                <div class="space-y-4">
+                    <div>
+                        <h4 class="font-bold text-lg text-slate-800">Core Value Proposition: Versatility & Ecosystem</h4>
+                        <p class="text-slate-600">Positioned as the "jack-of-all-trades" AI, ChatGPT excels at a vast range of tasks from content creation to software development. Its first-mover advantage and robust, developer-friendly API have fostered a massive ecosystem, creating a powerful network effect that reinforces its market leadership.</p>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-lg text-slate-800">Core Technology: GPT Model Family</h4>
+                        <p class="text-slate-600">Powered by the proprietary GPT models, culminating in GPT-5. It uses a sophisticated router system to direct queries to either fast or powerful models, optimizing for cost, latency, and quality. Its deep partnership with Microsoft provides the immense computational power of Azure.</p>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-lg text-slate-800">User Experience (UX)</h4>
+                        <p class="text-slate-600">The archetypal two-panel chat interface set the industry standard for simplicity. However, as features have been added, the UX has become strained, particularly in the GPTs Store, which has been criticized for poor discovery and inconsistent design.</p>
+                    </div>
+                </div>
+            `
+        },
+        gemini: {
+            title: "Google's Gemini: The Ecosystem Integrator",
+            content: `
+                <div class="space-y-4">
+                    <div>
+                        <h4 class="font-bold text-lg text-slate-800">Core Value Proposition: Productivity through Integration</h4>
+                        <p class="text-slate-600">Gemini's primary differentiator is its deep, native integration with the Google ecosystem (Workspace, Maps, Photos). It acts as a centralized command layer for a user's digital life, automating tasks and streamlining workflows within the tools millions use daily.</p>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-lg text-slate-800">Core Technology: Natively Multimodal</h4>
+                        <p class="text-slate-600">Designed from the ground up to be multimodal, Gemini seamlessly processes and reasons across text, images, audio, video, and code. It boasts an enormous context window (up to 2 million tokens) and offers specialized models for different use cases, from the powerful Ultra to the efficient on-device Nano.</p>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-lg text-slate-800">User Experience (UX)</h4>
+                        <p class="text-slate-600">The interface is clean, legible, and reflects Google's expertise in user-centered design. The standout feature is the pervasive ecosystem integration, which transforms Gemini from a standalone app into a powerful productivity partner.</p>
+                    </div>
+                </div>
+            `
+        },
+        claude: {
+            title: "Anthropic's Claude: The Enterprise-Focused Ethicist",
+            content: `
+                <div class="space-y-4">
+                    <div>
+                        <h4 class="font-bold text-lg text-slate-800">Core Value Proposition: Safety, Trust, and Reliability</h4>
+                        <p class="text-slate-600">Claude targets risk-averse corporations by building its brand around safety and ethical principles. Its secondary value proposition is its superior long-context comprehension, making it a powerful tool for analyzing dense documents like legal filings or financial reports.</p>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-lg text-slate-800">Core Technology: Constitutional AI</h4>
+                        <p class="text-slate-600">Claude's models are trained using a unique "Constitutional AI" methodology, which embeds safety and harmlessness into the model's core architecture. It also features an exceptionally large 200,000-token context window, allowing it to reason over hundreds of pages of text in a single prompt.</p>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-lg text-slate-800">User Experience (UX)</h4>
+                        <p class="text-slate-600">Praised for its elegant and intuitive design. Its standout feature is "Artifacts," a dedicated workspace that appears next to the chat. It allows users to see generated content (code, designs) in its final format and iterate on it conversationally, creating a dynamic, collaborative workflow.</p>
+                    </div>
+                </div>
+            `
+        },
+        'le-chat': {
+            title: "Mistral's Le Chat: The European Open-Weight Champion",
+            content: `
+                <div class="space-y-4">
+                    <div>
+                        <h4 class="font-bold text-lg text-slate-800">Core Value Proposition: Efficiency, Performance, and Control</h4>
+                        <p class="text-slate-600">Mistral focuses on delivering state-of-the-art performance with models that are smaller, faster, and more cost-effective. By releasing powerful open-weight models, it empowers developers and businesses to customize and deploy AI on their own infrastructure, addressing concerns about vendor lock-in and data privacy.</p>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-lg text-slate-800">Core Technology: Sparse Mixture of Experts (MoE)</h4>
+                        <p class="text-slate-600">Mistral employs advanced architectures like MoE, which allows models to have a huge number of parameters but only use a fraction of them for any given task. This achieves a superior performance-to-cost ratio. It pursues a hybrid strategy, offering both open-weight and proprietary models.</p>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-lg text-slate-800">User Experience (UX)</h4>
+                        <p class="text-slate-600">The interface is minimalist and functionality-focused, with tools like Web Search and Code Interpreter immediately accessible. Its defining characteristic is exceptional speed, with a "Flash Answers" feature capable of delivering responses at ~1,000 words per second.</p>
+                    </div>
+                </div>
+            `
+        },
+        perplexity: {
+            title: "Perplexity AI: The Specialized Answer Engine",
+            content: `
+                <div class="space-y-4">
+                    <div>
+                        <h4 class="font-bold text-lg text-slate-800">Core Value Proposition: Accuracy and Trust</h4>
+                        <p class="text-slate-600">In a market plagued by AI "hallucinations," Perplexity has built its brand on providing reliable, up-to-date, and verifiable answers. It directly addresses the biggest pain point for users seeking factual information, making it an indispensable tool for research and fact-finding.</p>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-lg text-slate-800">Core Technology: RAG & Multi-Model Backend</h4>
+                        <p class="text-slate-600">Its core is a highly optimized Retrieval-Augmented Generation (RAG) system that fuses live web search with LLM synthesis. Uniquely, its Pro subscription is a meta-platform, giving users access to a selection of top models from competitors (GPT-4.1, Claude 4.0, etc.) to use as the reasoning engine.</p>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-lg text-slate-800">User Experience (UX)</h4>
+                        <p class="text-slate-600">The UI is designed for clarity and trust. Its defining feature is the central role of source citations, which are a core, non-negotiable part of every response. The "Focus" tool allows users to constrain searches to specific domains like academic papers or YouTube, providing unmatched precision.</p>
+                    </div>
+                </div>
+            `
+        }
+    };
+
+    const useCaseData = {
+        creator: [
+            { rank: 'Winner', platform: 'ChatGPT', reason: 'Unmatched versatility, industry-leading image generation/editing, and a vast ecosystem of custom GPTs make it the most powerful all-in-one tool for content workflows.' },
+            { rank: 'Runner-up', platform: 'Gemini', reason: 'Strong at creating structured content with high-quality image generation. Native Google Docs integration is a significant workflow advantage.' },
+            { rank: 'Specialist', platform: 'Claude', reason: 'Exceptional for long-form, high-quality writing, excelling at nuanced and coherent text. However, its lack of image generation is a major drawback.' }
+        ],
+        developer: [
+            { rank: 'Winner (In-IDE)', platform: 'Claude', reason: 'Purpose-built for professionals, "Claude Code" operates directly in the terminal/IDE with full codebase context, making it a uniquely powerful pair programmer.' },
+            { rank: 'Winner (General)', platform: 'ChatGPT', reason: 'The default choice for many due to strong performance in code generation across languages and extensive, mature API documentation.' },
+            { rank: 'Contender', platform: 'Mistral', reason: 'Highly appealing for its open-weight, efficient models, offering deep customization, fine-tuning, and self-hosting for maximum control and privacy.' }
+        ],
+        researcher: [
+            { rank: 'Winner', platform: 'Perplexity', reason: 'The entire platform is optimized for this use case, providing accurate, verifiable answers with prominent citations. Its "Focus" feature is unparalleled for serious research.' },
+            { rank: 'Runner-up', platform: 'Claude', reason: 'Its massive context window is best-in-class for analyzing and summarizing multiple large, dense documents like academic papers or legal filings.' },
+            { rank: 'Contender', platform: 'ChatGPT/Gemini', reason: '"Deep Research" modes are highly capable for broad topic exploration and serve as excellent starting points, but lack Perplexity\'s specialized focus.' }
+        ],
+        business: [
+            { rank: 'Winner (Safety)', platform: 'Claude', reason: 'Its foundational focus on safety ("Constitutional AI") makes it the most compelling choice for risk-averse organizations in regulated industries.' },
+            { rank: 'Winner (Productivity)', platform: 'Gemini', reason: 'For businesses in the Google ecosystem, its deep Workspace integration transforms it into a powerful, collaborative productivity engine.' },
+            { rank: 'Contender', platform: 'ChatGPT', reason: 'Offers robust Team/Enterprise plans with shared workspaces, admin controls, and enhanced security, making it a versatile tool for many business teams.' }
+        ]
+    };
+    
+    const features = [
+        { feature: 'Basic Web Search', chatgpt: '✅', gemini: '✅', claude: '✅', le_chat: '✅', perplexity: '✅' },
+        { feature: 'Deep Research Mode', chatgpt: '✅', gemini: '✅', claude: '✅', le_chat: '✅', perplexity: '✅' },
+        { feature: 'Source Citations', chatgpt: '✅', gemini: '✅', claude: '✅', le_chat: '✅', perplexity: '✅' },
+        { feature: 'File Upload', chatgpt: '✅', gemini: '✅', claude: '✅', le_chat: '✅', perplexity: '✅' },
+        { feature: 'Data Analysis / Code Interpreter', chatgpt: '✅', gemini: '✅', claude: '✅', le_chat: '✅', perplexity: '✅' },
+        { feature: 'Data Visualization', chatgpt: '✅', gemini: '✅', claude: '✅', le_chat: '✅', perplexity: '🟡' },
+        { feature: 'Image Input / Analysis', chatgpt: '✅', gemini: '✅', claude: '✅', le_chat: '✅', perplexity: '✅' },
+        { feature: 'Image Generation', chatgpt: '✅', gemini: '✅', claude: '❌', le_chat: '✅', perplexity: '✅' },
+        { feature: 'Video Input / Analysis', chatgpt: '✅', gemini: '✅', claude: '❌', le_chat: '❌', perplexity: '❌' },
+        { feature: 'Video Generation', chatgpt: '❌', gemini: '✅', claude: '❌', le_chat: '❌', perplexity: '❌' },
+        { feature: 'Voice Input / Output', chatgpt: '✅', gemini: '✅', claude: '✅', le_chat: '✅', perplexity: '✅' },
+        { feature: 'Custom Agents', chatgpt: '✅', gemini: '✅', claude: '🟡', le_chat: '✅', perplexity: '🟡' },
+        { feature: 'Agentic Workflows', chatgpt: '✅', gemini: '✅', claude: '✅', le_chat: '🟡', perplexity: '✅' },
+        { feature: 'Ecosystem Integrations', chatgpt: '✅', gemini: '✅', claude: '✅', le_chat: '🟡', perplexity: '✅' },
+    ];
+
+    const pricing = [
+        { tier: 'Free', chatgpt: 'Access to GPT-4o mini, limited GPT-5.', gemini: 'Access to Gemini 2.0 Flash, 15 GB storage.', claude: 'Limited access to Sonnet, caps reset every 5 hours.', le_chat: 'Limited daily messages & tool usage.', perplexity: 'Unlimited concise searches, 3 Pro searches/day.' },
+        { tier: 'Individual Pro', chatgpt: '$20/mo. Full GPT-5 access, advanced tools.', gemini: '$19.99/mo. Gemini 2.5 Pro, 2 TB storage, Workspace integration.', claude: '$20/mo. 5x usage, access to all models.', le_chat: '~$15/mo. Unlimited messages.', perplexity: '$20/mo. 500+ Pro searches, access to multiple models.' },
+        { tier: 'Team', chatgpt: '$25/user/mo. Shared workspace, admin controls.', gemini: '$20/user/mo. Gemini in Workspace.', claude: '$30/user/mo. Collaborative features.', le_chat: '~$25/mo. Central billing, unlimited.', perplexity: '$40/user/mo. Org repository, integrations.' },
+        { tier: 'Enterprise', chatgpt: 'Custom pricing. SOC 2 compliance, advanced security.', gemini: '$30/user/mo. Advanced AI meeting features.', claude: 'Custom pricing. For large-scale deployments.', le_chat: 'Custom pricing. On-premise options.', perplexity: 'Custom pricing. Enhanced security, dedicated support.' },
+    ];
+
+
+    function populateFeaturesTable() {
+        const tbody = document.getElementById('features-table-body');
+        tbody.innerHTML = '';
+        features.forEach(item => {
+            const row = document.createElement('tr');
+            row.className = 'hover:bg-slate-50';
+            row.innerHTML = `
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-slate-900">${item.feature}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-center text-slate-500 table-cell-feature">${item.chatgpt}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-center text-slate-500 table-cell-feature">${item.gemini}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-center text-slate-500 table-cell-feature">${item.claude}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-center text-slate-500 table-cell-feature">${item.le_chat}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-center text-slate-500 table-cell-feature">${item.perplexity}</td>
+            `;
+            tbody.appendChild(row);
+        });
+    }
+
+    function populatePricingTable() {
+        const tbody = document.getElementById('pricing-table-body');
+        tbody.innerHTML = '';
+        pricing.forEach(item => {
+            const row = document.createElement('tr');
+            row.className = 'hover:bg-slate-50';
+            row.innerHTML = `
+                <td class="px-6 py-4 whitespace-nowrap font-bold text-slate-900">${item.tier}</td>
+                <td class="px-6 py-4 text-slate-600">${item.chatgpt}</td>
+                <td class="px-6 py-4 text-slate-600">${item.gemini}</td>
+                <td class="px-6 py-4 text-slate-600">${item.claude}</td>
+                <td class="px-6 py-4 text-slate-600">${item.le_chat}</td>
+                <td class="px-6 py-4 text-slate-600">${item.perplexity}</td>
+            `;
+            tbody.appendChild(row);
+        });
+    }
+
+
+    const platformTabs = document.querySelectorAll('.platform-tab');
+    const platformContent = document.getElementById('platform-content');
+
+    function updatePlatformContent(platform) {
+        const data = platformData[platform];
+        if (data) {
+            platformContent.innerHTML = `
+                <h4 class="text-2xl font-bold text-slate-900 mb-6">${data.title}</h4>
+                ${data.content}
+            `;
+        }
+    }
+
+    platformTabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            platformTabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            const platform = tab.dataset.platform;
+            updatePlatformContent(platform);
+        });
+    });
+
+    const personaBtns = document.querySelectorAll('.persona-btn');
+    const useCaseContent = document.getElementById('use-case-content');
+
+    function updateUseCaseContent(persona) {
+        const data = useCaseData[persona];
+        if (data) {
+            useCaseContent.innerHTML = data.map(item => `
+                <div class="bg-white p-6 rounded-xl shadow-lg border-t-4 ${
+                    item.rank === 'Winner' || item.rank === 'Winner (In-IDE)' || item.rank === 'Winner (General)' ? 'border-blue-500' : 
+                    item.rank === 'Runner-up' ? 'border-slate-400' : 'border-slate-300'
+                }">
+                    <h5 class="font-bold text-lg text-slate-800 mb-2">${item.rank}: ${item.platform}</h5>
+                    <p class="text-slate-600 text-sm">${item.reason}</p>
+                </div>
+            `).join('');
+        }
+    }
+
+    personaBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            personaBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const persona = btn.dataset.persona;
+            updateUseCaseContent(persona);
+        });
+    });
+    
+    const radarCtx = document.getElementById('strategyRadarChart').getContext('2d');
+    const radarData = {
+        labels: ['Versatility', 'Ecosystem Integration', 'Enterprise Safety', 'Openness & Control', 'Research Accuracy'],
+        datasets: [
+            {
+                label: 'ChatGPT',
+                data: [5, 4, 3, 2, 3],
+                backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                borderColor: 'rgba(59, 130, 246, 1)',
+                pointBackgroundColor: 'rgba(59, 130, 246, 1)',
+                pointBorderColor: '#fff',
+                pointHoverBackgroundColor: '#fff',
+                pointHoverBorderColor: 'rgba(59, 130, 246, 1)'
+            },
+            {
+                label: 'Gemini',
+                data: [4, 5, 4, 1, 3],
+                backgroundColor: 'rgba(234, 179, 8, 0.2)',
+                borderColor: 'rgba(234, 179, 8, 1)',
+                pointBackgroundColor: 'rgba(234, 179, 8, 1)',
+                pointBorderColor: '#fff',
+                pointHoverBackgroundColor: '#fff',
+                pointHoverBorderColor: 'rgba(234, 179, 8, 1)'
+            },
+            {
+                label: 'Claude',
+                data: [3, 3, 5, 1, 4],
+                backgroundColor: 'rgba(139, 92, 246, 0.2)',
+                borderColor: 'rgba(139, 92, 246, 1)',
+                pointBackgroundColor: 'rgba(139, 92, 246, 1)',
+                pointBorderColor: '#fff',
+                pointHoverBackgroundColor: '#fff',
+                pointHoverBorderColor: 'rgba(139, 92, 246, 1)'
+            },
+            {
+                label: 'Le Chat',
+                data: [3, 2, 2, 5, 2],
+                backgroundColor: 'rgba(16, 185, 129, 0.2)',
+                borderColor: 'rgba(16, 185, 129, 1)',
+                pointBackgroundColor: 'rgba(16, 185, 129, 1)',
+                pointBorderColor: '#fff',
+                pointHoverBackgroundColor: '#fff',
+                pointHoverBorderColor: 'rgba(16, 185, 129, 1)'
+            },
+            {
+                label: 'Perplexity',
+                data: [2, 2, 3, 2, 5],
+                backgroundColor: 'rgba(239, 68, 68, 0.2)',
+                borderColor: 'rgba(239, 68, 68, 1)',
+                pointBackgroundColor: 'rgba(239, 68, 68, 1)',
+                pointBorderColor: '#fff',
+                pointHoverBackgroundColor: '#fff',
+                pointHoverBorderColor: 'rgba(239, 68, 68, 1)'
+            }
+        ]
+    };
+    new Chart(radarCtx, {
+        type: 'radar',
+        data: radarData,
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            elements: {
+                line: {
+                    borderWidth: 3
+                }
+            },
+            scales: {
+                r: {
+                    angleLines: {
+                        color: 'rgba(0, 0, 0, 0.1)'
+                    },
+                    grid: {
+                        color: 'rgba(0, 0, 0, 0.1)'
+                    },
+                    pointLabels: {
+                        font: {
+                            size: 12,
+                            weight: 'bold'
+                        },
+                        color: '#475569'
+                    },
+                    ticks: {
+                        backdropColor: 'transparent',
+                        stepSize: 1,
+                        font: {
+                            size: 10
+                        }
+                    },
+                    min: 0,
+                    max: 5
+                }
+            },
+            plugins: {
+                legend: {
+                    position: 'top',
+                    labels: {
+                        font: {
+                            size: 12
+                        }
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            let label = context.dataset.label || '';
+                            if (label) {
+                                label += ': ';
+                            }
+                            if (context.parsed.r !== null) {
+                                label += context.parsed.r;
+                            }
+                            return label;
+                        }
+                    }
+                }
+            }
+        }
+    });
+
+    updatePlatformContent('chatgpt');
+    updateUseCaseContent('creator');
+    populateFeaturesTable();
+    populatePricingTable();
+
+    const navLinks = document.querySelectorAll('.nav-link');
+    const sections = document.querySelectorAll('section');
+
+    window.addEventListener('scroll', () => {
+        let current = '';
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop;
+            if (pageYOffset >= sectionTop - 80) {
+                current = section.getAttribute('id');
+            }
+        });
+
+        navLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href').includes(current)) {
+                link.classList.add('active');
+            }
+        });
+    });
+
+});
+</script>
+</body>
+</html>
